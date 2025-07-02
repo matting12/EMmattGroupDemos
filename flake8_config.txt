@@ -1,0 +1,35 @@
+# Save this as .flake8 in your project root
+
+[flake8]
+# Maximum line length (PEP8 recommends 79, but 88 is common with Black)
+max-line-length = 79
+
+# Error codes to ignore
+ignore = 
+    # W503: line break before binary operator (conflicts with Black)
+    W503,
+    # E203: whitespace before ':' (conflicts with Black)
+    E203
+
+# Exclude files and directories
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    build,
+    dist,
+    *.egg-info,
+    .tox,
+    .mypy_cache,
+    .pytest_cache
+
+# Maximum complexity for functions (McCabe complexity)
+max-complexity = 10
+
+# Show source code for errors
+show-source = True
+
+# Count errors
+statistics = True
