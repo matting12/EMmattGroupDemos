@@ -1,4 +1,20 @@
-# todo_manager.py - Simple Todo List Manager
+"""
+todo_manager.py - Todo List Manager
+
+FUNCTIONALITY OVERVIEW:
+This version attempts to enhance the original todo manager by adding a priority system:
+- All original todo operations (add, complete, view, save/load)
+- NEW: Priority levels (1=high, 2=medium, 3=low) for todos
+- NEW: Sorting todos by priority level
+- Enhanced todo management with priority-based organization
+
+WHAT TO REVIEW:
+- Is there any missing functionality?
+- Broken logic?
+- Readability
+- Code structure and organization
+
+"""
 import json
 from datetime import datetime
 
@@ -26,10 +42,7 @@ class TodoManager:
                 todo['completed_at'] = datetime.now().isoformat()
                 return True
         return False
-    
-    def delete_todo(self, todo_id):
-        self.todos = [todo for todo in self.todos if todo['id'] != todo_id]
-    
+        
     def get_todos(self, show_completed=True):
         if show_completed:
             return self.todos
@@ -43,25 +56,35 @@ class TodoManager:
         try:
             with open(filename, 'r') as f:
                 self.todos = json.load(f)
-                if self.todos:
-                    self.next_id = max(todo['id'] for todo in self.todos) + 1
         except FileNotFoundError:
             pass
+    
+    # NEW: Added priority feature
+    def set_priority(self, todo_id, priority):
+        """Set priority for a todo item (1=high, 2=medium, 3=low)"""
+        for todo in self.todos:
+            if todo['id'] == todo_id:
+                todo['priority'] = priority
+                return True
+        return False
+    
+    def get_todos_by_priority(self):
+        """Get todos sorted by priority"""
+        return sorted(self.todos, key=lambda x: x.get('priority', 3))
 
 # Example usage
 if __name__ == "__main__":
     manager = TodoManager()
     
     # Add some todos
-    manager.add_todo("Buy groceries", "Milk, eggs, bread")
-    manager.add_todo("Finish project", "Complete the Python assignment")
-    manager.add_todo("Call mom")
+    id1 = manager.add_todo("Buy groceries", "Milk, eggs, bread")
+    id2 = manager.add_todo("Finish project", "Complete the Python assignment")
     
-    # Mark one as completed
-    manager.mark_completed(1)
+    # Set priorities
+    manager.set_priority(id1, 2)  # medium priority
+    manager.set_priority(id2, 1)  # high priority
     
-    # Show all todos
-    print("All todos:")
-    for todo in manager.get_todos():
-        status = "✓" if todo['completed'] else "○"
-        print(f"{status} {todo['title']}: {todo['description']}")
+    # Show todos by priority
+    for todo in manager.get_todos_by_priority():
+        priority_text = {1: "HIGH", 2: "MEDIUM", 3: "LOW"}.get(todo.get('priority', 3), "UNKNOWN")
+        print(f"[{priority_text}] {todo['title']}: {todo['description']}")
